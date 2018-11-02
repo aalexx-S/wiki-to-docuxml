@@ -8,6 +8,10 @@ All the testing and developement are based on Chinese wiki pages (zh.wikipedia.o
 
 [1]: http://docusky.digital.ntu.edu.tw/DocuSky/documentation/docs/DocuXml-2.0-schemet.html
 
+## Dependencies
+
+* [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) - A Python library for pulling data out of HTML and XML files.
+
 
 ## Contribution
 
