@@ -2,16 +2,29 @@
 # WIKI to docuXML
 
 This project is aimed to create [docuXML][1] from a wiki page.
-Given a wiki page URL, we can generate a [docuXML][1] file using this project.
+Given wiki page URLs, we can generate a [docuXML][1] file using this project.
 
 All the testing and developement are based on Chinese wiki pages (zh.wikipedia.org) for now.
 
 [1]: http://docusky.digital.ntu.edu.tw/DocuSky/documentation/docs/DocuXml-2.0-schemet.html
 
-## Dependencies
+## Usage
 
-* [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) - A Python library for pulling data out of HTML and XML files.
+WIP.
 
+## Sequence Diagram
+
+* Open
+
+![Sequence for opening existing docuXML](docs/sequence_01_load.png)
+
+* Update
+
+![Sequence for updaing loaded/new docuXML](docs/sequence_01_update.png)
+
+## Structure
+
+WIP.
 
 ## Contribution
 
