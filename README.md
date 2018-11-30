@@ -14,7 +14,9 @@ WIP.
 
 ## Structure
 
-WIP.
+* Structure
+
+![Illustration of structure](docs/structure.png)
 
 ## Sequence Diagram
 
