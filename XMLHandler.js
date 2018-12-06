@@ -34,17 +34,17 @@ class XMLHandler {
 		let tmp = [];
 		for (let key in this.struct) {
 			if (this.struct.hasOwnProperty(key)) {
-				tmp.push({
-					'name': this.struct[key].corpus.getAttribute('name'),
-					'wiki': this.struct[key].wiki.reduce(function (arr, cur) {
-						arr.push({
-							'name': cur.getAttribute('filename'),
-							'url': cur.getElementsByTagName('wiki_metadata')[0].getElementsByTagName('url')[0].textContent
-						});
-						return arr;
-					}, [])
-				});
-			}
+                tmp.push({
+                    'name': this.struct[key].corpus.getAttribute('name'),
+                    'wiki': this.struct[key].wiki.reduce(function (arr, cur) {
+                        arr.push({
+                            'name': cur.getAttribute('filename'),
+                            'url': cur.getElementsByTagName('wiki_metadata')[0].getElementsByTagName('url')[0].textContent
+                        });
+                        return arr;
+                    }, [])
+                });
+            }
 		}
 		return tmp;
 	}
@@ -56,31 +56,34 @@ class XMLHandler {
 			return value = [{'name': corpus_name, 'wiki': [wiki_url, wiki_url, ...]},
 							{'name': corpus_name, 'wiki': [wiki_url, wiki_url, ...]}, ...]
 		*/
-		return data.reduce(function(acc, cur) {
-			let key = cur.name;
-			let url = cur.wiki;
-			let src = this.struct[key].wiki.reduce(function(acc, cur) {
+		let struct = this.struct;
+		function _check_urls(key, urls) {
+			let src = struct[key].wiki.reduce(function(acc, cur) {
 				acc.push(cur.getElementsByTagName('wiki_metadata')[0].getElementsByTagName('url')[0].textContent);
 				return acc;
 			}, []);
-			let inter = url.filter(function(e) {
+			let inter = urls.filter(function(e) {
 				return src.includes(e);
 			});
-			this.struct[key].wiki = this.struct[key].wiki.filter(function(val) {
+			struct[key].wiki = struct[key].wiki.filter(function(val) {
 				return inter.includes(val.getElementsByTagName('wiki_metadata')[0].getElementsByTagName('url')[0].textContent);
 			});
-			acc.push(url.filter(function(e) {
-				return (!inter.includes(e));
-			}));
+			return urls.filter(function(e) {return (!inter.includes(e));});
+		}
+		return data.reduce(function(acc, cur) {
+			acc.push({
+				'name': cur.name,
+				'wiki': _check_urls(cur.name, cur.wiki)
+			});
 			return acc;
 		}, []);
 	}
 	create_corpus(name) {
 		if (!(name in this.struct)) {
-			let corpus = document.createElement('corpus');
-			corpus.setAttribute('name', name);
-			this.struct[name] = {'corpus': corpus, 'wiki': [], 'common': []};
-		}
+            let corpus = document.createElement('corpus');
+            corpus.setAttribute('name', name);
+            this.struct[name] = {'corpus': corpus, 'wiki': [], 'common': []};
+        }
 	}
 	add_document(data) {
 		/*
@@ -108,15 +111,15 @@ class XMLHandler {
 		*/
 		let xml = document.createElement('ThdlPrototypeExport');
 		let docs = document.createElement('documents');
-		function _appendChild(child) {
-			docs.appendChild(child);
-		}
+        function _appendChild(child) {
+            docs.appendChild(child);
+        }
 		for (let key in this.struct) {
 			if (this.struct.hasOwnProperty(key)) {
-				xml.appendChild(this.struct[key].corpus);
-				this.struct[key].wiki.forEach(_appendChild);
-				this.struct[key].common.forEach(_appendChild);
-			}
+                xml.appendChild(this.struct[key].corpus);
+                this.struct[key].wiki.forEach(_appendChild);
+                this.struct[key].common.forEach(_appendChild);
+            }
 		}
 		xml.appendChild(docs);
 		return xml;
