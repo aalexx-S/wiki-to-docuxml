@@ -69,7 +69,7 @@ function get_URL(urls, progress_update_callback, result_callback) {
 				data.data.filename = page.title;
 				data.data.wiki_metadata.url = event.data.url;
 				data.data.wiki_metadata.page_id = page.pageid;
-				data.data.document = page.extract;
+				data.data.doc_content = page.extract;
 				data.data.compilation = event.data.url;
 				insert_result(data);
 			}
