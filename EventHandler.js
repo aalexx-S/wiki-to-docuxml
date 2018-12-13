@@ -162,6 +162,8 @@ function urls(corpus){
 		if(list[i].className!="list-group-item completed"){
 			if(list[i].innerText.startsWith("http")){
 				url.push(list[i].innerText);
+			}else{
+				url.push(list[i].innerText.slice(list[i].innerText.indexOf(":")+2));
 			}
 		}
 	}
