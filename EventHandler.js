@@ -12,7 +12,7 @@ window.addEventListener("load", function() {
   document.getElementById("fileupload").onchange = function(event) {
     var reader = new FileReader();
     reader.readAsDataURL(event.srcElement.files[0]);
-    var me = this;
+    $("#upload").prop('disabled',false);
     reader.onload = function () {
       var fileContent = reader.result;
 	  result=fileContent;
@@ -39,13 +39,14 @@ function readTextFile(file,load){
 		xmlDoc=new XMLHandler();
 	}
 }
-function changePage(event){
+function loadPage(event){
 	// standard behavior
 	event.preventDefault();
 
     // for IE (untested)
     if(document.getElementById("fileupload").value == ""){
     	filename = "docuXML.xml";
+    	$("#firstcorpus").toggle();
     }
     readTextFile(result,loadDoc);
     event.returnValue = false;
@@ -54,26 +55,32 @@ function changePage(event){
     	allText = text;
     	xmlDoc=new XMLHandler(allText);
     	list = xmlDoc.corpus_list;
-    	if(list!=null){
-    		$("#corpus").show();
-    	}
     	for(let Corpuskey in list){
-    		$('#corpus').append("<a class='link' href='#' id='"+list[Corpuskey].name+"link' onclick='openCity(event,\""+
+    		$('#corpus').append("<a style='flex-grow: 1' class='link' href='#' id='"+list[Corpuskey].name+"link' onclick='openCity(event,\""+
     			list[Corpuskey].name+"\")'>"+list[Corpuskey].name+"</a>");
     		$('#content').append("<div id='"+list[Corpuskey].name+"' class='tabcontent'><div class='form-group'><h1 align='center'>"+
-    			list[Corpuskey].name+"</h1><div><form name='"+list[Corpuskey].name+"wiki' class='form-inline justify-content-center' onsubmit='return Addwiki(event,\""+list[Corpuskey].name+"\");'><div class='form-inline'><label for='"+list[Corpuskey].name+"wikiurl'>URL:</label><input type='url' class='form-control mr-sm-2' id='"+list[Corpuskey].name+
+    			list[Corpuskey].name+"</h1><div><form name='"+list[Corpuskey].name+"wiki' class='form-inline justify-content-center' onsubmit='return Addwiki(event,\""+list[Corpuskey].name+"\");'><div class='form-inline'><label for='"+list[Corpuskey].name+"wikiurl'>URL:</label><input type='url' style='text-align:center;' size='80' class='form-control mr-sm-2' id='"+list[Corpuskey].name+
     			"wikiurl' name='"+list[Corpuskey].name+"wikiurl' placeholder='Enter URL' required></div>"+"<button class='button dark' type='submit'>Add</button></form></div></div>"+
 				"<ul class='list-group "+list[Corpuskey].name+"Table'></ul></div>");
     		document.getElementById(list[Corpuskey].name).style.display="none";
     		for(let URLkey in list[Corpuskey].wiki){
-    			$('.'+list[Corpuskey].name+'Table').append("<li class='list-group-item' id='"+list[Corpuskey].wiki[URLkey].url.split(/[.:/]/).join("")+"' onclick='deleted(event)'>" +list[Corpuskey].wiki[URLkey].name+
-    				" : "+list[Corpuskey].wiki[URLkey].url+"</li>");
+    			$('.'+list[Corpuskey].name+'Table').append("<li class='list-group-item list-group-item-success' id='"+list[Corpuskey].wiki[URLkey].url.split(/[.:/]/).join("")+"' onclick='deleted(event)'>"+
+    			list[Corpuskey].wiki[URLkey].url+"</li>");
     		}
     	}
     	first = false;
     	// Get the element with defaultOpen and click on it
 		document.getElementById(list[0].name+"link").click();
     }
+}
+
+function createPage(event){
+	event.preventDefault();
+	filename = "docuXML.xml";
+    $("#firstcorpus").toggle();
+    event.returnValue = false;
+    $(".Layer").toggle();
+    xmlDoc=new XMLHandler();
 }
 
 function openCity(event, cityName) {
@@ -86,7 +93,11 @@ function openCity(event, cityName) {
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    document.getElementById(cityName).style.display = "block";
+    if(!$("#"+cityName+"link").hasClass("completed")){
+    	document.getElementById(cityName).style.display = "block";
+    }else{
+    	document.getElementById(cityName).style.display = "none";
+    }
     event.currentTarget.className += " active";
 }
 
@@ -104,19 +115,31 @@ function Addwiki(event,name){
 function Addcorpus(event){
 	event.preventDefault();
 	if($("input[name=corpusname]").val()!=""){
-		$('#corpus').append("<a class='link' href='#' id='"+$("input[name=corpusname]").val()+"link' onclick='openCity(event,\""+
+		var repeated = false;
+		var tablinks = document.getElementsByClassName("link");
+		for(var i = 0; i < tablinks.length; i++){
+			if(($("input[name=corpusname]").val()) == $(".link")[i].innerText){
+				repeated =  true;
+				break;
+			}
+		}
+		if(!repeated){
+			$('#corpus').append("<a style='flex-grow: 1' class='link' href='#' id='"+$("input[name=corpusname]").val()+"link' onclick='openCity(event,\""+
     			$("input[name=corpusname]").val()+"\")'>"+$("input[name=corpusname]").val()+"</a>");
     		$('#content').append("<div id='"+$("input[name=corpusname]").val()+"' class='tabcontent'><div class='form-group'><h1 align='center'>"+
-    			$("input[name=corpusname]").val()+"</h1><div><form name='"+$("input[name=corpusname]").val()+"wiki' class='form-inline justify-content-center' onsubmit='return Addwiki(event,\""+$("input[name=corpusname]").val()+"\");'><div class='form-inline'><label for='"+$("input[name=corpusname]").val()+"wikiurl'>URL:</label><input type='url' class='form-control mr-sm-2' id='"+$("input[name=corpusname]").val()+
+    			$("input[name=corpusname]").val()+"</h1><div><form name='"+$("input[name=corpusname]").val()+"wiki' class='form-inline justify-content-center' onsubmit='return Addwiki(event,\""+$("input[name=corpusname]").val()+"\");'><div class='form-inline'><label for='"+$("input[name=corpusname]").val()+"wikiurl'>URL:</label><input type='url' style='text-align:center;' size='80' class='form-control mr-sm-2' id='"+$("input[name=corpusname]").val()+
     			"wikiurl' name='"+$("input[name=corpusname]").val()+"wikiurl' placeholder='Enter URL' required></div>"+"<button class='button dark' type='submit'>Add</button></form></div></div>"+
 				"<ul class='list-group "+$("input[name=corpusname]").val()+"Table'></ul></div>");
     		document.getElementById($("input[name=corpusname]").val()).style.display="none";
     		if(first==true){
+    			$("#firstcorpus").toggle();
     			document.getElementById($("input[name=corpusname]").val()+"link").click();
     			first=false;
     		}
-    		$("#corpus").show();
-    		$('#corpusname').val("");
+		}else{
+			alert("The Corpus name is already exist!")
+		}
+		$('#corpusname').val("");
 	}
 	return false;
 }
@@ -160,11 +183,7 @@ function urls(corpus){
 	var url = [];
 	for(var i=0;i<list.length;i++){
 		if(list[i].className!="list-group-item completed"){
-			if(list[i].innerText.startsWith("http")){
-				url.push(list[i].innerText);
-			}else{
-				url.push(list[i].innerText.slice(list[i].innerText.indexOf(":")+2));
-			}
+			url.push(list[i].innerText);
 		}
 	}
 	return url;
@@ -180,9 +199,13 @@ function query(value,i){
 			get_URL(wikilist, progress_update, function(l) {
 				for(var j = 0; j < l.length; j++) {	
 					var text=JSON.stringify(l[j]);
-					var doc=JSON.parse(text).data;
-		    		xmlDoc.add_document({'name':value[i].name,'document':doc});	
-		    		$('#'+doc.wiki_metadata.url.split(/[.:/]/).join(""))[0].innerText=doc.filename+" : "+doc.wiki_metadata.url;
+					var doc=JSON.parse(text);
+					if(doc.status){
+						xmlDoc.add_document({'name':value[i].name,'document':doc.data});
+						$('#'+doc.url.split(/[.:/]/).join("")).toggleClass("list-group-item-success");
+					}else if(!$('#'+doc.url.split(/[.:/]/).join("")).hasClass("list-group-item-danger")){
+						$('#'+doc.url.split(/[.:/]/).join("")).toggleClass("list-group-item-danger");
+					}
 				}
 				query(value,++i);
 			});
@@ -217,14 +240,14 @@ var textFile=null;
 function makeTextFile(text){
 	var data = new Blob([text], {type: 'text/plain'});
 
-	    // If we are replacing a previously generated file we need to
-	    // manually revoke the object URL to avoid memory leaks.
-	    if (textFile !== null) {
-	      window.URL.revokeObjectURL(textFile);
-	    }
+    // If we are replacing a previously generated file we need to
+    // manually revoke the object URL to avoid memory leaks.
+    if (textFile !== null) {
+      window.URL.revokeObjectURL(textFile);
+    }
 
-	    textFile = window.URL.createObjectURL(data);
+    textFile = window.URL.createObjectURL(data);
 
-	    // returns a URL you can use as a href
-	    return textFile;
+    // returns a URL you can use as a href
+    return textFile;
 }
