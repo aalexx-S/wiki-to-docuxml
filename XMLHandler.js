@@ -2,9 +2,9 @@ class XMLHandler {
 	constructor(src) {
 		let parser = new DOMParser();
 		if (src == null) {
-			this.xml_root = parser.parseFromString('<ThdlPrototypeExport></ThdlPrototypeExport>', "text/xml").getRootNode();
+			this.xml_root = parser.parseFromString('<ThdlPrototypeExport></ThdlPrototypeExport>', "text/xml");
 		} else {
-			this.xml_root = parser.parseFromString(src, "text/xml").getRootNode();
+			this.xml_root = parser.parseFromString(src, "text/xml");
 		}
 		this.struct = [].slice.call(this.xml_root.getElementsByTagName('corpus')).filter(function(x) {
 			if (x.hasAttribute('name'))
@@ -109,7 +109,7 @@ class XMLHandler {
 		/*
 			return value = DOM Element
 		*/
-		let xml = document.createElement('ThdlPrototypeExport');
+		let xml = document.createElementNS('http://www.w3.org/1999/xhtml/', 'ThdlPrototypeExport');
 		let docs = document.createElement('documents');
         function _appendChild(child) {
             docs.appendChild(child);
