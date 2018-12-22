@@ -106,7 +106,7 @@ function Addwiki(event,name){
 	//do stuff
 	if($("input[name="+name+"wikiurl]").val()!=""){
 	  	$('.'+name+'Table').append("<li class='list-group-item' id='"+
-	  		$("input[name="+name+"wikiurl]").val().split(/[.:/]/).join("")+"' onclick='deleted(event)'>"+$("input[name="+name+"wikiurl]").val()+"</li>");
+	  		$("input[name="+name+"wikiurl]").val().split(/[.:/%]/).join("")+"' onclick='deleted(event)'>"+$("input[name="+name+"wikiurl]").val()+"</li>");
 	    $('#'+name+'wikiurl').val("");
   	}
   	return false;
@@ -202,9 +202,9 @@ function query(value,i){
 					var doc=JSON.parse(text);
 					if(doc.status){
 						xmlDoc.add_document({'name':value[i].name,'document':doc.data});
-						$('#'+doc.url.split(/[.:/]/).join("")).toggleClass("list-group-item-success");
-					}else if(!$('#'+doc.url.split(/[.:/]/).join("")).hasClass("list-group-item-danger")){
-						$('#'+doc.url.split(/[.:/]/).join("")).toggleClass("list-group-item-danger");
+						$('#'+doc.url.split(/[.:/%]/).join("")).toggleClass("list-group-item-success");
+					}else if(!$('#'+doc.url.split(/[.:/%]/).join("")).hasClass("list-group-item-danger")){
+						$('#'+doc.url.split(/[.:/%]/).join("")).toggleClass("list-group-item-danger");
 					}
 				}
 				query(value,++i);
