@@ -16,8 +16,8 @@ window.addEventListener("load", function() {
     reader.onload = function () {
       var fileContent = reader.result;
 	  result=fileContent;
-    }
-}});
+    };
+};});
 
 function readTextFile(file,load){
 	if(file!=null){
@@ -33,7 +33,7 @@ function readTextFile(file,load){
 	                load(xmlhttp.responseText);
 	            }
 	        }
-	    }
+	    };
 	    filename = $("#fileupload")[0].value.split('\\').pop();
 	}else{
 		xmlDoc=new XMLHandler();
@@ -137,7 +137,7 @@ function Addcorpus(event){
     			first=false;
     		}
 		}else{
-			alert("The Corpus name is already exist!")
+			alert("The Corpus name is already exist!");
 		}
 		$('#corpusname').val("");
 	}
@@ -172,7 +172,7 @@ function update(event){
 		});
 	}
 	var value=xmlDoc.check_necessary_url(data);
-	for(var i=0;i<value.length;i++){
+	for(i=0;i<value.length;i++){
 		Totalprogress+=value[i].wiki.length;
 	}
 	query(value,0);
@@ -197,7 +197,7 @@ function query(value,i){
 		}
 		if(wikilist!=''){
 			get_URL(wikilist, progress_update, function(l) {
-				for(var j = 0; j < l.length; j++) {	
+				for(var j = 0; j < l.length; j++) {
 					var text=JSON.stringify(l[j]);
 					var doc=JSON.parse(text);
 					if(doc.status){
