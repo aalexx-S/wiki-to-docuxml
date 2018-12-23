@@ -8,7 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <style>
-    	.files{ 
+    	.files{
 		    position:relative;
 		    border: 3px dashed #808080;
 		    text-align: center;
@@ -202,18 +202,21 @@
 				<h2>簡介</h2>
 			</div>
 			<div>
-				<p>本系統目的將維基頁面的內容加入至docuXML。</p>
-				<p>輸入特定維基百科頁面的URLs，我們會將其內容加入至對應的語料庫。</p>
+				<p>本系統的功能為: 將維基百科的頁面內容加入至docuXML文件中。輸入特定維基百科頁面的網址，我們會將其內容加入至對應的文獻集。</p>
+				<p>本工具不支援IE和Edge。請使用Chrome或其他瀏覽器。</p>
 			</div>
 			<div>
 				<h2>用法</h2>
 			</div>
 			<div>
 				<ol>
-					<li>上傳或建立新的docuXML檔案</li>
-					<li>可新增語料庫(Corpus)，在選取對應的語料庫之下，可編輯欲加入維基內容的URL清單</li>
-					<li>點選更新按鈕將維基百科的頁面內容加入至本docuXML檔</li>
-					<li>當完成所有更新後，你可以點選下載取得檔案</li>
+					<li>上傳或建立新的docuXML檔案。</li>
+					<li>於畫面左方可新增文獻集(Corpus)。</li>
+					<li>在選取對應的文獻集之下，可編輯欲加入維基百科內容的網址(URL)清單。網址必須為維基百科的條目網址，例如: <a href="https://zh.wikipedia.org/zh-tw/%E7%BB%B4%E5%9F%BA%E7%99%BE%E7%A7%91">中文維基百科條目</a>。</li>
+					<li>滑鼠點擊條目可以移除該條目。該條目會被畫上刪除線，以標示需要被刪除。</li>
+					<li>完成上述所有變更後，點選畫面左上角的<b> 更新 </b>按鈕以更新docuXML。</li>
+					<li>完成所有更新後，點選畫面左上角的<b> 下載 </b>儲存檔案。</li>
+					<li>在做出變更，例如添加Corpus、添加網址或是刪除網址後，必須點選<b> 更新 </b>按鈕，否則變更不會真正儲存到文件中。</li>
 				</ol>
 			</div>
 		</div>
@@ -225,10 +228,10 @@
 						<input type="file" name="fileupload" value="fileupload" id="fileupload" accept='.xml'>
 					</div>
 					<div>
-						<label for="fileupload"> 可選擇上傳或建立新檔</label>
+						<label for="fileupload">上傳docuXML檔案或建立新檔</label>
 					</div>
-						<input class="btn btn-primary btn-lg" id="upload" name="xmlfile" type="button" value="Upload" onclick="loadPage(event)" disabled>
-						<input class="btn btn-primary btn-lg" onclick="createPage(event)" type="button" value="Create">
+						<input class="btn btn-primary btn-lg" id="upload" name="xmlfile" type="button" value="上傳" onclick="loadPage(event)" disabled>
+						<input class="btn btn-primary btn-lg" onclick="createPage(event)" type="button" value="新增">
 				</form>
 			</div>
 		</div>
@@ -239,21 +242,21 @@
 			  <a class="navbar-brand">Wiki to docuXML</a>
 			  <div class="navbar-nav  mr-auto mt-2 mt-lg-0">
 			  	<div class="form-inline">
-				    <button type="button" class="button blue" onclick="update(event)">Update</button>
+				    <button title="確認變更，執行更新" type="button" class="button blue" onclick="update(event)">更新</button>
 				    <a id="downloadlink" download></a>
-				    <button type="button" class="button blue" id="download" onclick="download(event)">Download</button>
+				    <button title="儲存docuXML" type="button" class="button blue" id="download" onclick="download(event)">下載</button>
 				</div>
 			  </div>
 		</div>
 		<div id="corpus" class="vertical-menu" align="center">
-		  <h4 style="color:darkgray;">Corpus</h4>
+		  <h4 style="color:darkgray;">文獻集</h4>
 		  <form class="form-inline justify-content-center" onsubmit="return Addcorpus(event);">
-		    <input style="flex-grow: 9;text-align: center;" type="text" id="corpusname" name="corpusname" placeholder="Add New Corpus" required>
+		    <input style="flex-grow: 9;text-align: center;" type="text" id="corpusname" name="corpusname" placeholder="輸入文獻集名稱" required>
 		    <button style="flex-grow: 1;" class="button dark" type="submit">+</button>
 		  </form>
 		</div>
 
-		<div id="content"><div class="alert alert-secondary content" role="alert" id="firstcorpus" style="display:none;text-align:center;"><h2 style="-webkit-transform: translateY(-50%);-ms-transform: translateY(-50%);-o-transform: translateY(-50%);transform: translate(-50%, -50%);position: absolute;left:50%;top:50%;">請於左方輸入名稱以建立語料庫</h2></div></div>
+		<div id="content"><div class="alert alert-secondary content" role="alert" id="firstcorpus" style="display:none;text-align:center;"><h2 style="-webkit-transform: translateY(-50%);-ms-transform: translateY(-50%);-o-transform: translateY(-50%);transform: translate(-50%, -50%);position: absolute;left:50%;top:50%;">請於左方輸入名稱以建立文獻集</h2></div></div>
 	</div>
 </body>
 </html>
