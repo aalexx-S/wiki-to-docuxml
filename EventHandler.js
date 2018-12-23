@@ -183,7 +183,12 @@ function urls(corpus){
 	var url = [];
 	for(var i=0;i<list.length;i++){
 		if(list[i].className!="list-group-item completed"){
-			url.push(list[i].innerText);
+			if (url.includes(list[i].innerText)) { // if duplicated
+				$(list[i]).toggleClass("completed");
+				$(list[i]).html(list[i].innerText + '<br/>Duplicated.');
+			} else {
+				url.push(list[i].innerText);
+			}
 		}
 	}
 	return url;
@@ -198,13 +203,14 @@ function query(value,i){
 		if(wikilist!=''){
 			get_URL(wikilist, progress_update, function(l) {
 				for(var j = 0; j < l.length; j++) {
-					var text=JSON.stringify(l[j]);
-					var doc=JSON.parse(text);
+					var doc = l[j];
 					if(doc.status){
 						xmlDoc.add_document({'name':value[i].name,'document':doc.data});
-						$('#'+doc.url.split(/[.:/%]/).join("")).toggleClass("list-group-item-success");
+						$('#'+doc.url.split(/[.:/%]/).join("")).toggleClass("list-group-item-success"); // set background to green
+						$('#'+doc.url.split(/[.:/%]/).join("")).html('<b>' + doc.data.filename  + '</b><br/>' + doc.url); // set title
 					}else if(!$('#'+doc.url.split(/[.:/%]/).join("")).hasClass("list-group-item-danger")){
 						$('#'+doc.url.split(/[.:/%]/).join("")).toggleClass("list-group-item-danger");
+						$('#'+doc.url.split(/[.:/%]/).join("")).html(doc.url + '<br/><b>Error: </b>' + doc.data); // set warning/error
 					}
 				}
 				query(value,++i);
@@ -227,6 +233,8 @@ function download(event){
 	event.preventDefault();
 	var a=xmlDoc.export_xml();
 	var textToSave=(new XMLSerializer()).serializeToString(a);
+	textToSave = textToSave.replace(/ xmlns=\"http:\/\/www\.w3\.org\/1999\/xhtml\/\"/g, ''); // remove xmlns, docuxml cannot read this
+	textToSave = textToSave.replace(/ xmlns=\"http:\/\/www\.w3\.org\/1999\/xhtml\"/g, ''); // I don't know why there are two format of xmlns
 	var file=makeTextFile(textToSave);
     var link = document.getElementById('downloadlink');
     link.href = file;
