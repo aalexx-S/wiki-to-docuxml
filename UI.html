@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+    	.files{ 
+		    position:relative;
+		    border: 3px dashed #808080;
+		    text-align: center;
+		    margin: 0;
+		    width: 100% !important;
+		    height:180px;
+		    overflow:hidden;
+		}
+    	.files input {
+		    width: 100% !important;
+		    height:200px;
+		    border:none;
+		    padding:0;
+		    background:transparent;
+		    text-align:center;
+		}
+
+		.files:after {
+		    pointer-events: none;
+		    position: absolute;
+		    top: 60px;
+		    left: 0;
+		    width: 70px;
+		    right: 0;
+		    height: 70px;
+		    content: "";
+		    background-image: url(./upload-2-xxl.png);
+		    display: block;
+		    margin: 0 auto;
+		    background-size: 100%;
+		    background-repeat: no-repeat;
+		}
+
+		.files:before {
+		  content:"Browse or Drag file here";
+		  position:absolute;
+		  bottom:20px;;
+		  left:0;
+		  right:0;
+		  display:block;
+		  text-align:center;
+		  color:#808080;
+		  font-weight:bold;
+		}
+
+		#firstLayer {
+		    display: block;
+		}
+
+		#secondLayer {
+		    display: none;
+		}
+
+		.Layer {
+			position: static;
+		    width: 100%;
+		    height: 100%;
+		    margin: 0;
+		    padding: 0;
+		    top: 0;
+		    left: 0;
+		    background-color: white;
+		}
+
+		.button{
+			border: 1px solid black;
+			font-size: 16px;
+		    background: white;
+		    border-color:white;
+		}
+
+		.blue {
+  		  color:#2196F3;
+		}
+
+		.blue:hover {
+		  border-color: #2196F3;
+		  background: #2196F3;
+		  color:white;
+		}
+
+		.dark{
+			border-color: darkgray;
+		    background: darkgray;
+		    color:white;
+		}
+
+		.dark:hover {
+		  border-color: #2196F3;
+		  background: #2196F3;
+		  color:white;
+		}
+
+		/* Style the menu */
+		.vertical-menu {
+		    float: left;
+		    border: 1px solid #ccc;
+		    background-color: #f1f1f1;
+		    width: 15%;
+		    height: 592px;
+		}
+
+		.vertical-menu a {
+		    background-color: #f1f1f1;
+		    color: black;
+		    display: block;
+		    padding: 12px;
+		    text-decoration: none;
+		}
+
+		.vertical-menu a:hover {
+		    background-color: #ccc;
+		}
+
+		.vertical-menu a.active {
+		    background-color: #2196F3;
+		    color: white;
+		}
+
+		.vertical-menu a.completed {
+			background-color:#B02109;
+			color:white;
+			text-decoration: line-through;
+			cursor: pointer;
+		}
+
+		/* Style the tab content */
+		.tabcontent {
+		    float: left;
+		    padding: 0px 12px;
+		    border: 1px solid #ccc;
+		    width: 85%;
+		    border-left: none;
+		    height: 592px;
+		}
+
+		.content {
+		    float: left;
+		    padding: 0px 12px;
+		    border: 1px solid #ccc;
+		    width: 85%;
+		    border-left: none;
+		    height: 592px;
+		}
+
+		.completed{
+			color:gray;
+			text-decoration: line-through;
+		}
+
+		.list-group-item.completed:hover{
+			background-color: #f1f1f1;
+			text-decoration: line-through;
+			cursor: pointer;
+		}
+
+		.removeCorpus{
+			float:right;
+		    background-color: darkgray;
+		    color:white;
+		    border: 1px solid darkgray;
+			font-size: 12px;
+		    border-radius: 10px;
+        }
+
+        .removeCorpus:hover {
+        	float:right;
+            background-color:#B02109;
+            color:white;
+            border: 1px solid #B02109;
+            font-size: 12px;
+          	border-radius: 10px;
+		}
+	</style>
+	<!--<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  	<script src="https://malsup.github.io/jquery.blockUI.js"></script>
+	<script type="text/javascript" src="queryWikiAPI.js"></script>
+	<script type="text/javascript" src="wikiRequest.js"></script>
+	<script type="text/javascript" src="EventHandler.js"></script>
+	<script type="text/javascript" src="XMLHandler.js"></script>
+    <title>test</title>
+</head>
+<body>
+	<div id="firstLayer" class="Layer">
+		<h1 align="center" class="font-weight-bold">Wiki to docuXML<hr/></h1>
+		<div class="ml-5">
+			<div>
+				<h2>簡介</h2>
+			</div>
+			<div>
+				<p>本系統目的將維基頁面的內容加入至docuXML。</p>
+				<p>輸入特定維基百科頁面的URLs，我們會將其內容加入至對應的語料庫。</p>
+			</div>
+			<div>
+				<h2>用法</h2>
+			</div>
+			<div>
+				<ol>
+					<li>上傳或建立新的docuXML檔案</li>
+					<li>可新增語料庫(Corpus)，在選取對應的語料庫之下，可編輯欲加入維基內容的URL清單</li>
+					<li>點選更新按鈕將維基百科的頁面內容加入至本docuXML檔</li>
+					<li>當完成所有更新後，你可以點選下載取得檔案</li>
+				</ol>
+			</div>
+		</div>
+		<hr/>
+		<div class="container" align="center">
+			<div class="row justify-content-center">
+				<form name="myfile" id="myfile">
+					<div class="form-group files">
+						<input type="file" name="fileupload" value="fileupload" id="fileupload" accept='.xml'>
+					</div>
+					<div>
+						<label for="fileupload"> 可選擇上傳或建立新檔</label>
+					</div>
+						<input class="btn btn-primary btn-lg" id="upload" name="xmlfile" type="button" value="Upload" onclick="loadPage(event)" disabled>
+						<input class="btn btn-primary btn-lg" onclick="createPage(event)" type="button" value="Create">
+				</form>
+			</div>
+		</div>
+	</div>
+	<div id="secondLayer" class="Layer">
+		<div class="navbar">
+		 	 <!-- Navbar content -->
+			  <a class="navbar-brand">Wiki to docuXML</a>
+			  <div class="navbar-nav  mr-auto mt-2 mt-lg-0">
+			  	<div class="form-inline">
+				    <button type="button" class="button blue" onclick="update(event)">Update</button>
+				    <a id="downloadlink" download></a>
+				    <button type="button" class="button blue" id="download" onclick="download(event)">Download</button>
+				</div>
+			  </div>
+		</div>
+		<div id="corpus" class="vertical-menu" align="center">
+		  <h4 style="color:darkgray;">Corpus</h4>
+		  <form class="form-inline justify-content-center" onsubmit="return Addcorpus(event);">
+		    <input style="flex-grow: 9;text-align: center;" type="text" id="corpusname" name="corpusname" placeholder="Add New Corpus" required>
+		    <button style="flex-grow: 1;" class="button dark" type="submit">+</button>
+		  </form>
+		</div>
+
+		<div id="content"><div class="alert alert-secondary content" role="alert" id="firstcorpus" style="display:none;text-align:center;"><h2 style="-webkit-transform: translateY(-50%);-ms-transform: translateY(-50%);-o-transform: translateY(-50%);transform: translate(-50%, -50%);position: absolute;left:50%;top:50%;">請於左方輸入名稱以建立語料庫</h2></div></div>
+	</div>
+</body>
+</html>
