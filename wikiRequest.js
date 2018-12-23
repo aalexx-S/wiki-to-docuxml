@@ -40,6 +40,8 @@ function get_URL(urls, progress_update_callback, result_callback) {
 	}
 
 	// Preprocess init
+	function unique(value, index, self) {return self.indexOf(value) === index;}
+	urls = urls.filter(unique);
 	var queried_url = 0;
 	var total_length = urls.length;
 	var result_data = new Array(total_length);
@@ -60,10 +62,14 @@ function get_URL(urls, progress_update_callback, result_callback) {
 			var tmp = JSON.parse(re);
 			tmp = tmp.query.pages;
 			if (Object.keys(tmp).length == 0) {
-				console.log("[Error] Query success but contains no page. This really shouldn't happen.");
-				insert_result({"url": event.data.url, "status": false, "data": "[Error] Query success but contains no page content. This really shouldn't happen."});
+				console.log("Query success but contains no page. This really shouldn't happen.");
+				insert_result({"url": event.data.url, "status": false, "data": "Query success but contains no page content. This really shouldn't happen."});
 			}
 			for (var page_id in tmp) {
+				if (page_id == -1) {
+					insert_result({"url": event.data.url, "status": false, "data": "Wiki page with such title does not exists."});
+					break;
+				}
 				var page = tmp[page_id];
 				var data = {"url": event.data.url, "status": true, "data": {"wiki_metadata": {}}};
 				data.data.filename = page.title;
