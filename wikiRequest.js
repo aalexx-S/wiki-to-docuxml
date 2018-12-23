@@ -23,7 +23,7 @@ function get_URL(urls, progress_update_callback, result_callback) {
  * 				- wiki_metadata: dictioonary of metadata
  * 					- url: the query url
  * 					- page_id: the wiki page id
- * 				- document: string of document contnet.
+ * 				- document: dictionary of document content (loaded through json parser).
  * 				- compilation: url
  * 		entry.url: null if error occurs before querying.
  *
