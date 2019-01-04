@@ -23,7 +23,7 @@ function get_URL(urls, progress_update_callback, result_callback) {
  * 				- wiki_metadata: dictioonary of metadata
  * 					- url: the query url
  * 					- page_id: the wiki page id
- * 				- document: dictionary of document content (loaded through json parser).
+ * 				- document: string of document contnet.
  * 				- compilation: url
  * 		entry.url: null if error occurs before querying.
  *
@@ -40,15 +40,12 @@ function get_URL(urls, progress_update_callback, result_callback) {
 	}
 
 	// Preprocess init
+	function unique(value, index, self) {return self.indexOf(value) === index;}
+	urls = urls.filter(unique);
 	var queried_url = 0;
 	var total_length = urls.length;
 	var result_data = new Array(total_length);
-	function insert_result(data) {
-		var i = -1;
-		while ((i = urls.indexOf(data.url, i+1)) != -1){
-			result_data[i] = data;
-		}
-	}
+	function insert_result(data) {result_data[urls.indexOf(data.url)] = data;}
 
 	// Create Worker if not exist.
 	if (typeof(worker) != "undefined") {
