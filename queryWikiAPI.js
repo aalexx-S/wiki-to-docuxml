@@ -16,17 +16,19 @@ onmessage = function(event) {
 // forEach url, call postMessage to send result back
 function query(url, index) {
 	// http get
-	var re = api_call(url); // call mediawiki api to get full content
+	var re;
+	try {
+		re = api_call(url); // call mediawiki api to get full content
+	} catch (err) {
+		console.log(err);
+		postMessage({"url": url, "status": false, "data": "Cannot sent http request. Please check url or internet connection."});
+		return;
+	}
 	// return value
-	if (re !== undefined  && re.status == 200)
+	if (re.status == 200)
 		postMessage({"url": url, "status": true, "data": re.responseText});
 	else {
-		var err_text;
-		if (re === undefined)
-			err_text = "Cannot sent http request. Please check url or internet connection.";
-		else
-			err_text = re.statusText;
-		postMessage({"url": url, "status": false, "data": err_text});
+		postMessage({"url": url, "status": false, "data": re.statusText});
 	}
 }
 
@@ -50,13 +52,9 @@ function http_get(url) {
 	 * */
 	console.log("get:" + url);
 	var xmlHttp;
-	try {
-		xmlHttp = new XMLHttpRequest();
-		xmlHttp.open("GET", url, false); // synchronous, this code doesn't run on UI thread.
-		xmlHttp.send(null);
-	} catch(err) {
-		console.log(err);
-	}
+	xmlHttp = new XMLHttpRequest();
+	xmlHttp.open("GET", url, false); // synchronous, this code doesn"t run on UI thread.
+	xmlHttp.send(null);
 	return xmlHttp;
 }
 
