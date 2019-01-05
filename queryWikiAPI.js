@@ -8,7 +8,7 @@
 // workers can only accept string.
 onmessage = function(event) {
 	// revert url array from string
-	var urls = event.data.split(",");
+	var urls = event.data.split(",safe:http:sep,");
 	// loop through each url, query each page
 	urls.forEach(query);
 };
@@ -16,12 +16,18 @@ onmessage = function(event) {
 // forEach url, call postMessage to send result back
 function query(url, index) {
 	// http get
-	var re = api_call(url);
+	var re = api_call(url); // call mediawiki api to get full content
 	// return value
-	if (re.status == 200)
+	if (re !== undefined  && re.status == 200)
 		postMessage({"url": url, "status": true, "data": re.responseText});
-	else
-		postMessage({"url": url, "status": false, "data": re.statusText});
+	else {
+		var err_text;
+		if (re === undefined)
+			err_text = "Cannot sent http request. Please check url or internet connection.";
+		else
+			err_text = re.statusText;
+		postMessage({"url": url, "status": false, "data": err_text});
+	}
 }
 
 // get page content
@@ -43,9 +49,14 @@ function http_get(url) {
 	 * Reference: https://stackoverflow.com/questions/247483/http-get-request-in-javascript
 	 * */
 	console.log("get:" + url);
-	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.open("GET", url, false); // synchronous, this code doesn't run on UI thread.
-	xmlHttp.send(null);
+	var xmlHttp;
+	try {
+		xmlHttp = new XMLHttpRequest();
+		xmlHttp.open("GET", url, false); // synchronous, this code doesn't run on UI thread.
+		xmlHttp.send(null);
+	} catch(err) {
+		console.log(err);
+	}
 	return xmlHttp;
 }
 

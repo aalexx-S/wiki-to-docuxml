@@ -90,7 +90,7 @@ function get_URL(urls, progress_update_callback, result_callback) {
 	};
 
 	// Pass url to worker and start work
-	worker.postMessage(urls.toString());
+	worker.postMessage(urls.join(",safe:http:sep,"));
 }
 
 function stop_worker() {
