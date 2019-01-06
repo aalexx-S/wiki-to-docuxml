@@ -51,7 +51,7 @@ function get_URL(urls, progress_update_callback, result_callback) {
 	if (typeof(worker) != "undefined") {
 		return {"url":null, "status": false, "data": "worker busy, try later"};
 	}
-	worker = new Worker("queryWikiAPI.js");
+	worker = new Worker("js/queryWikiAPI.js");
 
 	// Set worker on message
 	worker.onmessage = function(event) {
