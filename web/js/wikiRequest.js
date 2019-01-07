@@ -75,7 +75,7 @@ function get_URL(urls, progress_update_callback, result_callback) {
 				data.data.filename = page.title;
 				data.data.wiki_metadata.url = event.data.url;
 				data.data.wiki_metadata.page_id = page.pageid;
-				data.data.doc_content = page.extract.replace(/(?<!\\)\n/g, "<br>"); // Change \n to <br> so that browsers can understand. Avoid '\\n'.
+				data.data.doc_content = page.extract.replace(/(?!\\)\n/g, "<br>"); // Change \n to <br> so that browsers can understand. Avoid '\\n'.
 				data.data.compilation = event.data.url;
 				insert_result(data);
 			}
