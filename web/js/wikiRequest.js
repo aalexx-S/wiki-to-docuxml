@@ -110,11 +110,11 @@ function get_all_links(url, result_callback, result_data, con_str) {
 	 *  			- key: page title, '_' replaced with ' '.
 	 *  			- value: url
  	 *
-	 *	result_data: dictionary (optional)
+	 *	result_data: dictionary (leave it as 'undefined' if not processing 'continue')
 	 *		The format is the same as return data. New data will be added into it.
 	 *		If url does not match, result_data will be discaeded.
 	 *
-	 *  con_str: string (optional)
+	 *  con_str: string (leave it as 'undefined' if not processing 'continue')
 	 *		If is not empty, the string will be add to api call parameter.
 	 *
 	 * Return value: dictionary
