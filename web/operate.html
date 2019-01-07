@@ -1,0 +1,42 @@
+<script type="text/javascript" src="js/blockUI.js"></script>
+<script type="text/javascript" src="js/urlUtil.js"></script>
+<script type="text/javascript" src="js/wikiRequest.js"></script>
+<script type="text/javascript" src="js/operate.js"></script>
+<link rel="stylesheet" href="css/operate.css">
+<div id="tool-operate">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="#" id="home" class="navbar-brand">
+                    <span class="glyphicon glyphicon-home"></span>&nbsp;Wiki to DocuXML Tool
+                </a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#" id="synchronize">
+                            <span class="glyphicon glyphicon-refresh"></span>&nbsp;更新文獻集
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="download">
+                            <span class="glyphicon glyphicon-floppy-save"></span>&nbsp;匯出docuXML
+                        </a>
+                        <a href="#" id="download-link" style="display: none"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="side-navbar">
+        <h4 class="select-disable">文獻集</h4>
+        <div class="input-group">
+            <input type="text" name="new-corpus-name" class="form-control no-rounded input-group-text" placeholder="建立新文獻集">
+            <span class="input-group-addon select-disable no-rounded span-btn" id="new-corpus">＋</span>
+        </div>
+        <div id="corpus-list"></div>
+    </div>
+    <div id="operate-space">
+        <h1>請先建立一個新的文獻集</h1>
+    </div>
+</div>
