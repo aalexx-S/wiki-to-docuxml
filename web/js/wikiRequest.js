@@ -164,6 +164,7 @@ function get_all_links(url, result_callback, result_data, con_str) {
 				var link = tmp[page_id];
 				var furl = link.fullurl;
 				var title = get_title_from_url(furl);
+				title = title.replace(/_/g, ' '); // replace underscore in url to actual space
 				result_data.data[title] = furl;
 			}
 			// check continue
@@ -183,7 +184,6 @@ function get_all_links(url, result_callback, result_data, con_str) {
 	con_str = con_str || '';
 	// Pass url to worker and start work
 	worker.postMessage(url + ",continue:query:string," + con_str);
-
 }
 
 function stop_worker() {
