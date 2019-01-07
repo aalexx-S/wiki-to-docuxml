@@ -152,11 +152,14 @@ function get_all_links(url, result_callback, result_data, con_str) {
 			var re = event.data.data;
 			// parse the links and put into dictionary
 			var tmp_all = JSON.parse(re);
+			if (! ('query' in tmp_all && 'pages' in tmp_all.query)) { // handle title error
+				tmp_all.query = {'pages': []};
+			}
 			var tmp = tmp_all.query.pages;
 			if (Object.keys(tmp).length == 0) {
-				console.log("Query success but contains no any link.");
+				console.log("No relative link found.");
 				result_data.status = false;
-				result_data.data = "Query success but no any links";
+				result_data.data = "Title incorrect or page not exist.";
 			}
 			for (var page_id in tmp) { // place all the links into return data
 				if (page_id == -1)
