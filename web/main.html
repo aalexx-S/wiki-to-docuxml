@@ -1,0 +1,34 @@
+<script type="text/javascript" src="js/main.js"></script>
+<link rel="stylesheet" href="css/main.css">
+<div id="tool-main">
+    <div id="tool-title"><h1 class="text-center select-disable">Wiki to DocuXML Tool</h1></div>
+    <hr>
+    <div id="tool-content" class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+        <div id="tool-introduction">
+            <h3>工具簡介</h3>
+            <ul>
+                <li>本工具為將維基百科的條目內容加入至 docuXML 文件的 docuSky 插件。</li>
+                <li>本工具支援 Chrome、Safari 等主流瀏覽器。</li>
+            </ul>
+        </div>
+        <div id="tool-manual">
+            <h3>使用說明</h3>
+            <ul>
+                <li>於下方上傳或建立 docuXML 文件並進入工具。</li>
+                <li>於畫面左方可新增文獻集(Corpus)。</li>
+                <li>在選取對應的文獻集之下，可編輯欲加入維基百科內容的網址(URL)清單。網址必須為維基百科的條目網址，例如: <a href="https://zh.wikipedia.org/zh-tw/%E7%BB%B4%E5%9F%BA%E7%99%BE%E7%A7%91">中文維基百科條目</a>。</li>
+                <li>滑鼠點擊條目可以移除該條目。該條目會被畫上刪除線，以標示需要被刪除。</li>
+                <li>完成上述所有變更後，點選畫面左上角的<b> 更新 </b>按鈕以更新docuXML。</li>
+                <li>完成所有更新後，點選畫面左上角的<b> 下載 </b>儲存檔案。</li>
+                <li>在做出變更，例如添加Corpus、添加網址或是刪除網址後，必須點選<b> 更新 </b>按鈕，否則變更不會真正儲存到文件中。</li>
+            </ul>
+        </div>
+    </div>
+    <hr>
+    <div id="tool-upload" >
+        <div id="upload-box"><input type="file" name="docuxml" accept='.xml'></div>
+        <div id="upload-hint"><label>上傳docuXML檔案或建立新檔</label></div>
+        <input type="button" class="btn btn-primary btn-lg" name="upload-btn" value="上傳">
+        <input type="button" class="btn btn-primary btn-lg" name="create-btn" value="建立">
+    </div>
+</div>

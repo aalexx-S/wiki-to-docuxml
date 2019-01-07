@@ -1,0 +1,68 @@
+#tool-operate {
+    height: 100%;
+}
+#side-navbar {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    background-color: #f1f1f1;
+    width: 230px;
+    height: 100%;
+    padding-top: 60px;
+    text-align: center;
+    color: #a9a9a9;
+}
+.span-btn {
+    cursor: pointer;
+}
+.span-btn:hover {
+    background-color: #ccc;
+}
+.input-group-text {
+    text-align: center;
+}
+.no-rounded {
+    border-radius: 0px;
+}
+.corpus-item {
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    cursor: pointer;
+}
+.corpus-item:hover {
+    background-color: #ccc;
+    color: #fff;
+}
+.corpus-item.active {
+    background-color: #aaa;
+    color: #fff;
+}
+#operate-space {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 240px;
+    width: calc(100% - 240px);
+    height: 100%;
+    padding-top: 60px;
+    text-align: center;
+}
+.table-tool-btn {
+    background: #fff;
+    border-radius: 5px;
+    border: 1px solid black;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 5px;
+    text-align:center;
+}
+.table-tool-btn:hover {
+    background: #ddd;
+}
+.table-tool-btn.disabled {
+    cursor: not-allowed;
+    background: #ddd;
+}

@@ -1,0 +1,24 @@
+html, body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+#container {
+	position: static;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	top: 0;
+	left: 0;
+}
+.text-center {
+	text-align: center;
+}
+.select-disable {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
