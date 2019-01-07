@@ -58,10 +58,13 @@ function http_get(url) {
 	return xmlHttp;
 }
 
-// get title from url, assumes the last token is the title
+// get title from url, assume all the string after 'wiki/' is title
 function get_title_from_url(url) {
-	var tmp = url.split("/");
-	return tmp[tmp.length - 1];
+	var tmp = url.match(/wiki\/(.*)/);
+	if (tmp.length > 1)
+		return tmp[1];
+	else
+		throw "Cannot find title after 'wiki/' token!";
 }
 
 // get wiki url. to support en or zh or other wiki sites.
