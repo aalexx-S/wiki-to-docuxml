@@ -26,57 +26,55 @@ class XMLHandler {
 			return acc;
 		}, this.struct);
 	}
-	get corpus_list() {
+	get_corpus_list() {
 		/*
-			return value = [{'name': corpus_name, 'wiki': [{'name': wiki_name, 'url': wiki_url}, {'name': wiki_name, 'url': wiki_url}, ...]},
-							{'name': corpus_name, 'wiki': [{'name': wiki_name, 'url': wiki_url}, {'name': wiki_name, 'url': wiki_url}, ...]}, ...]
+			return value = [corpus_name, corpus_name, corpus_name, ...]
 		 */
 		let tmp = [];
 		for (let key in this.struct) {
-			if (this.struct.hasOwnProperty(key)) {
-                tmp.push({
-                    'name': this.struct[key].corpus.getAttribute('name'),
-                    'wiki': this.struct[key].wiki.reduce(function (arr, cur) {
-                        arr.push({
-                            'name': cur.getAttribute('filename'),
-                            'url': cur.getElementsByTagName('wiki_metadata')[0].getElementsByTagName('url')[0].textContent
-                        });
-                        return arr;
-                    }, [])
-                });
-            }
+			if (this.struct.hasOwnProperty(key))
+                tmp.push(key);
 		}
 		return tmp;
 	}
-	check_necessary_url(data) {
+	get_wiki_list(key) {
 		/*
-			require data = [{'name': corpus_name, 'wiki': [wiki_url, wiki_url, ...]},
-							{'name': corpus_name, 'wiki': [wiki_url, wiki_url, ...]}, ...]
+			return value = [{'name': wiki_name, 'url': wiki_url}, {'name': wiki_name, 'url': wiki_url}, ...]
+		 */
+		let tmp = [];
+		if (this.struct.hasOwnProperty(key)) {
+		    this.struct[key].wiki.reduce(function(acc, cur) {
+			    acc.push({
+				    'name': cur.getAttribute('filename'),
+				    'url': cur.getElementsByTagName('wiki_metadata')[0].getElementsByTagName('url')[0].textContent
+			    });
+			    return acc;
+		    }, tmp);
+        }
+        return tmp;
+    }
+	check_necessary_url(key, urls) {
+		/*
+			require key  = corpus_name
+			        urls = [wiki_url, wiki_url, ...]
 
-			return value = [{'name': corpus_name, 'wiki': [wiki_url, wiki_url, ...]},
-							{'name': corpus_name, 'wiki': [wiki_url, wiki_url, ...]}, ...]
+			return value = [wiki_url, wiki_url, ...]
 		*/
-		let struct = this.struct;
-		function _check_urls(key, urls) {
-			let src = struct[key].wiki.reduce(function(acc, cur) {
+		let tmp = [];
+		if (this.struct.hasOwnProperty(key)) {
+		    let src = this.struct[key].wiki.reduce(function(acc, cur) {
 				acc.push(cur.getElementsByTagName('wiki_metadata')[0].getElementsByTagName('url')[0].textContent);
 				return acc;
 			}, []);
-			let inter = urls.filter(function(e) {
-				return src.includes(e);
+		    let inter = urls.filter(function(val) {
+				return src.includes(val);
 			});
-			struct[key].wiki = struct[key].wiki.filter(function(val) {
+			this.struct[key].wiki = this.struct[key].wiki.filter(function(val) {
 				return inter.includes(val.getElementsByTagName('wiki_metadata')[0].getElementsByTagName('url')[0].textContent);
 			});
-			return urls.filter(function(e) {return (!inter.includes(e));});
-		}
-		return data.reduce(function(acc, cur) {
-			acc.push({
-				'name': cur.name,
-				'wiki': _check_urls(cur.name, cur.wiki)
-			});
-			return acc;
-		}, []);
+			tmp = urls.filter(function(val) {return (!inter.includes(val));});
+        }
+        return tmp;
 	}
 	create_corpus(name) {
 		if (!(name in this.struct)) {
