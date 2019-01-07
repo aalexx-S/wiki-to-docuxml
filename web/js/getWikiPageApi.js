@@ -4,6 +4,8 @@
  * It seems like if we request one page/request at a time, and don't request several pages/requests in parallel, then we should definitely be fine.
  * */
 
+importScripts('urlUtil.js');
+
 // wait for urls
 // workers can only accept string.
 onmessage = function(event) {
@@ -45,30 +47,3 @@ function api_call(url) {
 	return http_get(HTTPS + wiki + API + parameter + title);
 }
 
-// make http requests
-function http_get(url) {
-	/*
-	 * Reference: https://stackoverflow.com/questions/247483/http-get-request-in-javascript
-	 * */
-	console.log("get:" + url);
-	var xmlHttp;
-	xmlHttp = new XMLHttpRequest();
-	xmlHttp.open("GET", url, false); // synchronous, this code doesn"t run on UI thread.
-	xmlHttp.send(null);
-	return xmlHttp;
-}
-
-// get title from url, assume all the string after 'wiki/' is title
-function get_title_from_url(url) {
-	var tmp = url.match(/wiki\/(.*)/);
-	if (tmp.length > 1)
-		return tmp[1];
-	else
-		throw "Cannot find title after 'wiki/' token!";
-}
-
-// get wiki url. to support en or zh or other wiki sites.
-function get_wiki_url(url) {
-	var tmp = url.split("/");
-	return tmp[2];
-}
