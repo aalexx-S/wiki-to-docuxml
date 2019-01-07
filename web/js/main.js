@@ -16,7 +16,7 @@ $("input:button[name=upload-btn]").click(function() {
             window.load_operate();
         };
     } else {
-        alert("未選擇上傳檔案");
+        window.alert("未選擇上傳檔案");
     }
 });
 $("input:button[name=create-btn]").click(function() {
