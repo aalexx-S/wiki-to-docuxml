@@ -6,7 +6,7 @@
     position: absolute;
     top: 0;
     background-color: #f1f1f1;
-    width: 230px;
+    width: 180px;
     height: 100%;
     padding-top: 60px;
     text-align: center;
@@ -29,6 +29,10 @@
     padding-top: 15px;
     padding-bottom: 15px;
     cursor: pointer;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    text-overflow : ellipsis;
 }
 .corpus-item:hover {
     background-color: #ccc;
@@ -83,7 +87,6 @@
     padding: 90px 0 0 0;
     vertical-align: top;
     display: inline-block;
-    overflow: auto;
 }
 #arrow-wrap-r {
     width: 100%;

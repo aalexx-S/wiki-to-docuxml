@@ -13,6 +13,34 @@ function hash(s) {
     return (h ^ h >>> 17) >>> 0;
 }
 
+// Function : create and config DOM element
+function elementFactory(data) {
+    if (!data.hasOwnProperty("type"))
+        return null;
+    let el = document.createElement(data.type);
+    if (data.hasOwnProperty("class"))
+        $(el).addClass(data.class);
+    if (data.hasOwnProperty("html"))
+        $(el).html(data.html);
+    if (data.hasOwnProperty("css"))
+        $(el).css(data.css);
+    if (data.hasOwnProperty("attr")) {
+        for (let key in data.attr) {
+            if (!data.attr.hasOwnProperty(key))
+                continue;
+            $(el).attr(key, data.attr[key]);
+        }
+    }
+    if (data.hasOwnProperty("on")) {
+        for (let key in data.on) {
+            if (!data.on.hasOwnProperty(key))
+                continue;
+            $(el).on(key, { target: el }, data.on[key]);
+        }
+    }
+    return el;
+}
+
 // Function : check synchronize between wiki document table and docuXML
 function check_sync(content, btn_y, btn_n, callback) {
     let sync = true;
@@ -22,34 +50,36 @@ function check_sync(content, btn_y, btn_n, callback) {
             sync = false;
     });
     if (!sync) {
-        let dialog = document.createElement("div");
-        let tmp;
-        $(dialog).html(content);
-        tmp = document.createElement("button");
-        $(tmp).addClass("btn btn-default btn-xs");
-        $(tmp).attr("id", "no");
-        $(tmp).css("margin", "10px 20px 0 0");
-        $(tmp).html(btn_n);
-        $(dialog).append(tmp);
-        tmp = document.createElement("button");
-        $(tmp).addClass("btn btn-default btn-xs");
-        $(tmp).attr("id", "yes");
-        $(tmp).css("margin", "10px 0 0 20px");
-        $(tmp).html(btn_y);
-        $(dialog).append(tmp);
+        let dialog = elementFactory({ type: "div", html: content });
+        // no button
+        $(dialog).append(elementFactory({
+            type: "button",
+            attr: { id: "sync-dialog-no-btn" },
+            class: "btn btn-default btn-xs",
+            css: { margin: "10px 20px 0 0" },
+            html: btn_n,
+            on: { click: function() { $.unblockUI(); callback(false); } }
+        }));
+        // yes button
+        $(dialog).append(elementFactory({
+            type: "button",
+            attr: { id: "sync-dialog-yes-btn" },
+            class: "btn btn-default btn-xs",
+            css: { margin: "10px 0 0 20px" },
+            html: btn_y,
+            on: { click: function() { $.unblockUI(); callback(true); } }
+        }));
         $.blockUI({
             message: $(dialog),
-            css: { width: '300px', height: '120px', padding: '10px 0 0 0' }
+            css: { width: '300px', height: '120px', top: 'calc(50% - 60px)', left: 'calc(50% - 150px)', padding: '10px 0 0 0' }
         });
-        $("#yes").click(function() {$.unblockUI(); callback(true);});
-        $("#no").click(function() {$.unblockUI(); callback(false);});
     } else {
         callback(true);
     }
 }
 
 // Function : delete button click function
-function click_delete(e) {
+function click_delete_btn(e) {
     let key = $(e.data.target).attr("key");
     let row = $("#" + key);
     let span = $("#" + key + " td:nth-child(1) span")[0];
@@ -65,22 +95,7 @@ function click_delete(e) {
         $(row).css("text-decoration-line", "none");
 
     // row status
-    switch ($(row).attr("status")) {
-        case "0":
-            $(row).attr("status", "2");
-            break;
-        case "1":
-            $(row).attr("status", "3");
-            break;
-        case "2":
-            $(row).attr("status", "0");
-            break;
-        case "3":
-            $(row).attr("status", "1");
-            break;
-        default:
-            break;
-    }
+    $(row).attr("status", ((parseInt($(row).attr("status")) + 2) % 4).toString());
 
     // status sign
     if ($(row).attr("status") === "0") {
@@ -95,26 +110,23 @@ function click_delete(e) {
 }
 
 // Function : related entry item click function
-function click_related_entry(e) {
+function click_related_entry_item(e) {
     let self = e.data.target;
-    let key = $(self).html();
+    let key = $(self).attr("title");
     let url = $(self).attr("url");
-    let tmp = document.createElement("div");
-    $(tmp).addClass("related-entry-item");
-    $(tmp).attr("url", url);
-    $(tmp).attr("title", key);
-    $(tmp).html(key);
-    if ($(self).hasClass("src-item")) {
-        $(self).remove();
-        $(tmp).addClass("dst-item");
-        $(tmp).on('click', {target: tmp}, click_related_entry);
-        $("#related-entry-dst-list").append(tmp);
-    } else if ($(self).hasClass("dst-item")) {
-        $(self).remove();
-        $(tmp).addClass("src-item");
-        $("#related-entry-src-list").append(tmp);
-        $(tmp).on('click', {target: tmp}, click_related_entry);
-    }
+    let parent;
+    if ($(self).parent().attr("id") === "related-entry-src-list")
+        parent = $("#related-entry-dst-list");
+    else
+        parent = $("#related-entry-src-list");
+    $(self).remove();
+    $(parent).append(elementFactory({
+        type: "div",
+        attr: { url: url, title: key },
+        class: "related-entry-item select-disable",
+        html: key,
+        on: { click: click_related_entry_item }
+    }));
 }
 
 // Function add related entry to wiki document table
@@ -124,7 +136,7 @@ function add_related_entry() {
         let url = $(this).attr("url");
         if (!window.table_wiki_list.includes(url)) {
             window.table_wiki_list.push(url);
-            $("#wiki-table-body").append(create_wiki_table_row({name: key, url: url}, 1));
+            $("#wiki-table-body").append(create_wiki_table_row({ name: key, url: url }, 1));
         }
     });
     $.unblockUI();
@@ -132,105 +144,84 @@ function add_related_entry() {
 
 // Function : create block ui dialog for related entry
 function create_related_entry_dialog(data) {
-    let dialog = document.createElement("div");
-    let lst_wrap = document.createElement("div");
-    let src_lst = document.createElement("div");
-    let dst_lst = document.createElement("div");
-    let arrow_wrap = document.createElement("div");
-    let arrow_r = document.createElement("div");
-    let arrow_l = document.createElement("div");
-    let btn_wrap = document.createElement("div");
-    let tmp;
+    let dialog = elementFactory({ type: "div" });
+    let lst_wrap = elementFactory({ type: "div", css: { margin: "5px 0 5px 0" } });
+    let src_lst = elementFactory({ type: "div", attr: { id: "related-entry-src-list" }, class: "dialog-list" });
+    let dst_lst = elementFactory({ type: "div", attr: { id: "related-entry-dst-list" }, class: "dialog-list" });
+    let arrow_wrap = elementFactory({ type: "div", attr: { id: "arrow-container" } });
+    let arrow_r = elementFactory({ type: "div", attr: { id: "arrow-wrap-r" }, class: "select-disable" });
+    let arrow_l = elementFactory({ type: "div", attr: { id: "arrow-wrap-l" }, class: "select-disable" });
+    let btn_wrap = elementFactory({ type: "div", css: { margin: "5px 0 5px 0" } });
 
     // query result show
-    tmp = document.createElement("div");
-    $(tmp).html("找到 " + Object.keys(data).length + " 個相關條目");
-    $(tmp).css("margin", "5px 0 5px 0");
-    $(dialog).append(tmp);
+    $(dialog).append(elementFactory({
+        type: "div",
+        css: { margin: "5px 0 5px 0" },
+        html: "找到 " + Object.keys(data).length + " 個相關條目"
+    }));
 
-    // query result src and dst list
-    $(lst_wrap).css("margin", "5px 0 5px 0");
-    $(src_lst).attr("id", "related-entry-src-list");
-    $(src_lst).addClass("dialog-list");
+    // append wrapper for two list and arrow
     $(lst_wrap).append(src_lst);
-    $(arrow_wrap).attr("id", "arrow-container");
     $(lst_wrap).append(arrow_wrap);
-    $(dst_lst).attr("id", "related-entry-dst-list");
-    $(dst_lst).addClass("dialog-list");
     $(lst_wrap).append(dst_lst);
     $(dialog).append(lst_wrap);
-
     // add query result to src list
     for (let key in data) {
         if(!data.hasOwnProperty(key))
             continue;
-        tmp = document.createElement("div");
-        $(tmp).addClass("related-entry-item src-item");
-        $(tmp).attr("url", data[key]);
-        $(tmp).attr("title", decodeURIComponent(key));
-        $(tmp).html(decodeURIComponent(key));
-        $(tmp).on('click', {target: tmp}, click_related_entry);
-        $(src_lst).append(tmp);
+        $(src_lst).append(elementFactory({
+            type: "div",
+            attr: { url: data[key], title: decodeURIComponent(key) },
+            class: "related-entry-item select-disable",
+            html: decodeURIComponent(key),
+            on: { click: click_related_entry_item }
+        }));
     }
-
     // arrow right
-    $(arrow_r).attr("id", "arrow-wrap-r");
-    $(arrow_r).addClass("select-disable");
-    tmp = document.createElement("div");
-    $(tmp).attr("id", "arrow-tail-r");
-    $(arrow_r).append(tmp);
-    tmp = document.createElement("div");
-    $(tmp).attr("id", "arrow-body-r");
-    $(tmp).html("加入");
-    $(arrow_r).append(tmp);
-    tmp = document.createElement("div");
-    $(tmp).attr("id", "arrow-head-r");
-    $(arrow_r).append(tmp);
+    $(arrow_r).append(elementFactory({ type: "div", attr: { id: "arrow-tail-r" } }));
+    $(arrow_r).append(elementFactory({ type: "div", attr: { id: "arrow-body-r" }, html: "加入" }));
+    $(arrow_r).append(elementFactory({ type: "div", attr: { id: "arrow-head-r" } }));
     $(arrow_wrap).append(arrow_r);
-
     // arrow left
-    $(arrow_l).attr("id", "arrow-wrap-l");
-    $(arrow_l).addClass("select-disable");
-    tmp = document.createElement("div");
-    $(tmp).attr("id", "arrow-head-l");
-    $(arrow_l).append(tmp);
-    tmp = document.createElement("div");
-    $(tmp).attr("id", "arrow-body-l");
-    $(tmp).html("刪去");
-    $(arrow_l).append(tmp);
-    tmp = document.createElement("div");
-    $(tmp).attr("id", "arrow-tail-l");
-    $(arrow_l).append(tmp);
+    $(arrow_l).append(elementFactory({ type: "div", attr: { id: "arrow-head-l" } }));
+    $(arrow_l).append(elementFactory({ type: "div", attr: { id: "arrow-body-l" }, html: "刪去" }));
+    $(arrow_l).append(elementFactory({ type: "div", attr: { id: "arrow-tail-l" } }));
     $(arrow_wrap).append(arrow_l);
 
     // query result add and cancel button
-    $(btn_wrap).css("margin", "5px 0 5px 0");
-    tmp = document.createElement("button");
-    $(tmp).addClass("btn btn-default btn-xs");
-    $(tmp).attr("id", "related-entry-dialog-cancel");
-    $(tmp).css("margin", "0 20px 0 0");
-    $(tmp).html("取消");
-    $(btn_wrap).append(tmp);
-    tmp = document.createElement("button");
-    $(tmp).addClass("btn btn-default btn-xs");
-    $(tmp).attr("id", "related-entry-dialog-add");
-    $(tmp).css("margin", "0 0 0 20px");
-    $(tmp).html("加入");
-    $(btn_wrap).append(tmp);
+    $(btn_wrap).append(elementFactory({
+        type: "button",
+        attr: { id: "related-entry-dialog-cancel" },
+        class: "btn btn-default btn-xs",
+        css: { margin: "0 20px 0 0" },
+        html: "取消",
+        on: { click: $.unblockUI }
+    }));
+    $(btn_wrap).append(elementFactory({
+        type: "button",
+        attr: { id: "related-entry-dialog-add" },
+        class: "btn btn-default btn-xs",
+        css: { margin: "0 0 0 20px" },
+        html: "加入",
+        on: { click: add_related_entry }
+    }));
     $(dialog).append(btn_wrap);
 
     $.blockUI({
         message: $(dialog),
         css: { width: "450px", height: "330px", top: 'calc(50% - 165px)', left: 'calc(50% - 225px)', cursor: 'auto' }
     });
-    $("#related-entry-dialog-add").click(add_related_entry);
-    $("#related-entry-dialog-cancel").click($.unblockUI);
 }
 
 // Function : related entry button click function
-function click_next_level(e) {
+function click_related_entry_btn(e) {
     let key = $(e.data.target).attr("key");
     let url = $("#" + key).attr("url");
+
+    // disabled
+    if ($(e.data.target).hasClass("disabled"))
+        return;
+
     $.blockUI({ message: "正在取得相關條目..." });
     window.get_all_links(url, function(result) {
         if (result.status) {
@@ -243,13 +234,15 @@ function click_next_level(e) {
 }
 
 // Function : copy link button click function
-function click_copy_link(e) {
+function click_copy_link_btn(e) {
     let key = $(e.data.target).attr("key");
     let url = $("#" + key).attr("url");
-    let tmp = document.createElement('textarea');
+    let tmp = elementFactory({
+        type: "textarea",
+        attr: { readonly: "" },
+        css: { position: "absolute", left: "-9999px"}
+    });
     $(tmp).val(url);
-    $(tmp).attr("readonly", "");
-    $(tmp).css({"position": "absolute", "left": "-9999px"});
     document.body.appendChild(tmp);
     tmp.select();
     document.execCommand('copy');
@@ -263,7 +256,7 @@ function click_copy_link(e) {
 }
 
 // Function : error message button click function
-function click_error_message(e) {
+function click_error_message_btn(e) {
     let key = $(e.data.target).attr("key");
     let msg = $("#" + key).attr("msg");
     $.blockUI({ message: msg });
@@ -274,98 +267,74 @@ function click_error_message(e) {
 // Function : create new row in wiki document table
 function create_wiki_table_row(wiki_doc, state) {
     let pattern = new RegExp('https:\\/\\/((.*\\/)+wiki\\/)([^#]+)(#.*)*');
-    let src, entry, key;
-    let row = document.createElement("tr");
-    let cell, tmp, btn;
-    let icon = ["ok", "hourglass"];
+    let key = hash(wiki_doc.url);
+    let src = pattern.exec(wiki_doc.url)[1];
+    let entry = (wiki_doc.name !== null) ? wiki_doc.name : decodeURIComponent(pattern.exec(wiki_doc.url)[3]);
+    let cell, btn;
+    let icon_type = ["ok", "hourglass"];
     let icon_color = ["green", "black"];
 
-    // decode wiki source and entry
-    if (wiki_doc.name !== null) {
-        src = pattern.exec(wiki_doc.url)[1];
-        entry = wiki_doc.name;
-    } else {
-        src = pattern.exec(wiki_doc.url)[1];
-        entry = decodeURIComponent(pattern.exec(wiki_doc.url)[3]);
-    }
-
     // config row
-    key = hash(wiki_doc.url);
-    $(row).attr("id", key);
-    $(row).attr("url", wiki_doc.url);
-    $(row).attr("status", state.toString());
-    $(row).css("text-decoration-line", "none");
+    let row = elementFactory({
+        type: "tr",
+        attr: { id: key, url: wiki_doc.url, status: state.toString() },
+        css: { 'text-decoration-line': "none" }
+    });
 
     // status
-    cell = document.createElement("td");
-    $(cell).css("text-align", "center");
-    tmp = document.createElement("span");
-    $(tmp).addClass("glyphicon glyphicon-" + icon[state]);
-    $(tmp).css("color", icon_color[state]);
-    $(cell).append(tmp);
+    cell = elementFactory({ type: "td", css: { 'text-align': "center" } });
+    $(cell).append(elementFactory({
+        type: "span",
+        class: "glyphicon glyphicon-" + icon_type[state],
+        css: { color: icon_color[state] }
+    }));
     $(row).append(cell);
 
     // source
-    cell = document.createElement("td");
-    $(cell).css("text-align", "left");
-    $(cell).html(src);
-    $(row).append(cell);
+    $(row).append(elementFactory({ type: "td", css: { 'text-align': "left" }, html: src }));
 
     // entry
-    cell = document.createElement("td");
-    $(cell).css("text-align", "left");
-    $(cell).html(entry);
-    $(row).append(cell);
+    $(row).append(elementFactory({ type: "td", css: { 'text-align': "left" }, html: entry }));
 
     // button
-    cell = document.createElement("td");
-    $(cell).addClass("select-disable");
-    $(cell).css("text-align", "left");
+    cell = elementFactory({ type: "td", class: "select-disable", css: { 'text-align': "left" } });
     $(row).append(cell);
-
     // delete button
-    btn = document.createElement("div");
-    $(btn).addClass("table-tool-btn");
-    $(btn).attr("key", key);
-    $(btn).attr("title", "刪除此條目");
-    $(btn).on('click', {target: btn}, click_delete);
-    tmp = document.createElement("span");
-    $(tmp).addClass("glyphicon glyphicon-trash");
-    $(btn).append(tmp);
+    btn = elementFactory({
+        type: "div",
+        attr: { key: key, title: "刪除此條目" },
+        class: "table-tool-btn",
+        on: { click: click_delete_btn }
+    });
+    $(btn).append(elementFactory({ type: "span", class: "glyphicon glyphicon-trash" }));
     $(cell).append(btn);
-
     // related entry button
-    btn = document.createElement("div");
-    $(btn).addClass("table-tool-btn");
-    $(btn).attr("key", key);
-    $(btn).attr("title", "增加相關條目");
-    $(btn).on('click', {target: btn}, click_next_level);
-    tmp = document.createElement("span");
-    $(tmp).addClass("glyphicon glyphicon-list-alt");
-    $(btn).append(tmp);
+    btn = elementFactory({
+        type: "div",
+        attr: { key: key, title: "增加相關條目" },
+        class: "table-tool-btn",
+        on: { click: click_related_entry_btn }
+    });
+    $(btn).append(elementFactory({ type: "span", class: "glyphicon glyphicon-list-alt" }));
     $(cell).append(btn);
-
     // copy link button
-    btn = document.createElement("div");
-    $(btn).addClass("table-tool-btn");
-    $(btn).attr("key", key);
-    $(btn).attr("title", "複製此條目連結");
-    $(btn).on('click', {target: btn}, click_copy_link);
-    tmp = document.createElement("span");
-    $(tmp).addClass("glyphicon glyphicon-duplicate");
-    $(btn).append(tmp);
+    btn = elementFactory({
+        type: "div",
+        attr: { key: key, title: "複製此條目連結" },
+        class: "table-tool-btn",
+        on: { click: click_copy_link_btn }
+    });
+    $(btn).append(elementFactory({ type: "span", class: "glyphicon glyphicon-duplicate" }));
     $(cell).append(btn);
-
     // error message button
-    btn = document.createElement("div");
-    $(btn).addClass("table-tool-btn");
-    $(btn).attr("key", key);
-    $(btn).attr("title", "查看錯誤訊息");
-    $(btn).css("display", "none");
-    $(btn).on('click', {target: btn}, click_error_message);
-    tmp = document.createElement("span");
-    $(tmp).addClass("glyphicon glyphicon-exclamation-sign");
-    $(btn).append(tmp);
+    btn = elementFactory({
+        type: "div",
+        attr: { key: key, title: "查看錯誤訊息" },
+        class: "table-tool-btn",
+        css: { display: "none" },
+        on: { click: click_error_message_btn }
+    });
+    $(btn).append(elementFactory({ type: "span", class: "glyphicon glyphicon-exclamation-sign" }));
     $(cell).append(btn);
 
     return row;
@@ -391,67 +360,64 @@ function click_new_wiki() {
         return;
     }
     window.table_wiki_list.push(url);
-    $("#wiki-table-body").append(create_wiki_table_row({name: null, url: url}, 1));
+    $("#wiki-table-body").append(create_wiki_table_row({ name: null, url: url }, 1));
     $(text).val("");
 }
 
 // Function : create new operate space for clicked corpus item
 function create_corpus_operate(name) {
-    let space = $("#operate-space");
-    let wiki_list = window.handler.get_wiki_list(name);
-    let title = document.createElement("h2");
-    let url_input_group = document.createElement("div");
-    let table_container = document.createElement("div");
-    let table = document.createElement("table");
-    let thead = document.createElement("thead");
-    let tbody = document.createElement("tbody");
-    let row = document.createElement("tr");
-    let tmp;
-
-    // config title
-    $(title).html("文獻集：" + name);
-
     // config url bar
-    $(url_input_group).addClass("input-group col-md-8 col-md-offset-2");
-    tmp = document.createElement("span");
-    $(tmp).addClass("input-group-addon select-disable");
-    $(tmp).html("維基百科網址");
-    $(url_input_group).append(tmp);
-    tmp = document.createElement("input");
-    $(tmp).addClass("form-control input-group-text");
-    $(tmp).attr("placeholder", "請貼上維基百科網址");
-    $(tmp).attr("id", "new-wiki-url");
-    $(url_input_group).append(tmp);
-    tmp = document.createElement("span");
-    $(tmp).addClass("input-group-addon select-disable span-btn");
-    $(tmp).attr("id", "new-wiki");
-    $(tmp).html("新增");
-    $(tmp).on('click', click_new_wiki);
-    $(url_input_group).append(tmp);
+    let url_input_group = elementFactory({ type: "div", class: "input-group col-md-8 col-md-offset-2" });
+    $(url_input_group).append(elementFactory({
+        type: "span",
+        class: "input-group-addon select-disable",
+        html: "維基百科網址"
+    }));
+    $(url_input_group).append(elementFactory({
+        type: "input",
+        attr: { id: "new-wiki-url", placeholder: "請貼上維基百科網址" },
+        class: "form-control input-group-text"
+    }));
+    $(url_input_group).append(elementFactory({
+        type: "span",
+        attr: { id: "new-wiki" },
+        class: "input-group-addon select-disable span-btn",
+        html: "新增",
+        on: { click: click_new_wiki }
+    }));
 
     // config wiki document table
-    $(table_container).addClass("col-md-10 col-md-offset-1");
-    $(table).addClass("table table-striped");
-    tmp = document.createElement("th");
-    $(tmp).css({"text-align": "center", "width": "50px"});
-    $(tmp).html("狀態");
-    $(row).append(tmp);
-    tmp = document.createElement("th");
-    $(tmp).css("width", "200px");
-    $(tmp).html("來源");
-    $(row).append(tmp);
-    tmp = document.createElement("th");
-    $(tmp).html("條目");
-    $(row).append(tmp);
-    tmp = document.createElement("th");
-    $(tmp).css("width", "125px");
-    $(tmp).html("按鈕");
-    $(row).append(tmp);
-    $(thead).append(row);
+    let table_container = elementFactory({ type: "div", class: "col-md-10 col-md-offset-1" });
+    let table = elementFactory({ type: "table", class: "table table-striped" });
+    let thead = elementFactory({ type: "thead" });
+    let tbody = elementFactory({ type: "tbody", attr: { id: "wiki-table-body" } });
+    let row = elementFactory({ type: "tr" });
+    $(table_container).append(table);
     $(table).append(thead);
+    $(table).append(tbody);
+    $(thead).append(row);
+    $(row).append(elementFactory({
+        type: "th",
+        css: { width: "50px", 'text-align': "center" },
+        html: "狀態"
+    }));
+    $(row).append(elementFactory({
+        type: "th",
+        css: { width: "200px" },
+        html: "來源"
+    }));
+    $(row).append(elementFactory({
+        type: "th",
+        html: "條目"
+    }));
+    $(row).append(elementFactory({
+        type: "th",
+        css: { width: "125px" },
+        html: "按鈕"
+    }));
 
-    // add wiki document row to table
-    $(tbody).attr("id", "wiki-table-body");
+    // add row to wiki document table body
+    let wiki_list = window.handler.get_wiki_list(name);
     window.table_wiki_list = [];
     for (let key in wiki_list) {
         if (!wiki_list.hasOwnProperty(key))
@@ -459,12 +425,11 @@ function create_corpus_operate(name) {
         window.table_wiki_list.push(wiki_list[key].url);
         $(tbody).append(create_wiki_table_row(wiki_list[key], 0));
     }
-    $(table).append(tbody);
-    $(table_container).append(table);
 
     // clear space and append element
+    let space = $("#operate-space");
     $(space).html("");
-    $(space).append(title);
+    $(space).append(elementFactory({ type: "h2", html: "文獻集：" + name }));
     $(space).append(url_input_group);
     $(space).append(table_container);
 }
@@ -508,8 +473,7 @@ function wiki_result_callback(result) {
             continue;
         if (result[idx].status)
             window.handler.add_document({ name: $(window.corpus_target).html(), document: result[idx].data });
-        let key = hash(result[idx].url);
-        update_wiki_table_row(key, result[idx]);
+        update_wiki_table_row(hash(result[idx].url), result[idx]);
     }
     $.unblockUI();
 }
@@ -589,10 +553,12 @@ function click_corpus_item(e) {
 
 // Function : create new corpus item in side navigation bar
 function create_corpus_item(name) {
-    let corpus_item = document.createElement("div");
-    $(corpus_item).addClass("corpus-item select-disable");
-    $(corpus_item).html(name);
-    $(corpus_item).on('click', {target: corpus_item}, click_corpus_item);
+    let corpus_item = elementFactory({
+        type: "div",
+        class: "corpus-item select-disable",
+        html: name
+    });
+    $(corpus_item).on('click', { target: corpus_item }, click_corpus_item);
     $("#corpus-list").append(corpus_item);
     if (window.corpus_list.length === 1) {
         $(corpus_item).click();
