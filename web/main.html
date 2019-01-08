@@ -1,33 +1,69 @@
 <script type="text/javascript" src="js/main.js"></script>
 <link rel="stylesheet" href="css/main.css">
 <div id="tool-main">
-    <div id="tool-title"><h1 class="text-center select-disable">Wiki to DocuXML Tool</h1></div>
+    <div id="tool-title"><h2 class="text-center select-disable">Wiki to DocuXML Tool</h2></div>
     <hr>
     <div id="tool-content" class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
-        <div id="tool-introduction">
-            <h3>工具簡介</h3>
-            <ul>
-                <li>本工具為將維基百科的條目內容加入至 docuXML 文件的 docuSky 插件。</li>
-                <li>本工具支援 Chrome、Safari 等主流瀏覽器。</li>
-            </ul>
-        </div>
-        <div id="tool-manual">
-            <h3>使用說明</h3>
-            <ul>
-                <li>於下方上傳或建立 docuXML 文件並進入工具。</li>
-                <li>於畫面左方可新增文獻集(Corpus)。</li>
-                <li>在選取對應的文獻集之下，可編輯欲加入維基百科內容的網址(URL)清單。網址必須為維基百科的條目網址，例如: <a href="https://zh.wikipedia.org/zh-tw/%E7%BB%B4%E5%9F%BA%E7%99%BE%E7%A7%91">中文維基百科條目</a>。</li>
-                <li>滑鼠點擊條目可以移除該條目。該條目會被畫上刪除線，以標示需要被刪除。</li>
-                <li>完成上述所有變更後，點選畫面左上角的<b> 更新 </b>按鈕以更新docuXML。</li>
-                <li>完成所有更新後，點選畫面左上角的<b> 下載 </b>儲存檔案。</li>
-                <li>在做出變更，例如添加Corpus、添加網址或是刪除網址後，必須點選<b> 更新 </b>按鈕，否則變更不會真正儲存到文件中。</li>
-            </ul>
-        </div>
+        <h4>使用說明</h4>
+        <ol>
+            <li>本工具為將維基百科的條目內容加入至 DocuXML 文件的 DocuSky 插件</li>
+            <li>於網頁下方按鈕進入本工具
+                <ul>
+                    <li>建立新的 DocuXML 檔案</li>
+                    <li>載入既有 DocuXML 檔案</li>
+                </ul>
+            </li>
+            <li>進入工具後，介面左邊為文獻集管理欄位(一個文獻集中可含有多個維基條目)，請新增文獻集或選擇已創立的文獻集</li>
+            <li>從 Google 或者 Wikipedia 搜尋感興趣的維基條目，並複製條目網址，例如：<a target="_blank" href="https://zh.wikipedia.org/zh-tw/%E7%BB%B4%E5%9F%BA%E7%99%BE%E7%A7%91">中文維基百科條目</a></li>
+            <li>將複製後的網址貼上於文獻集上的文字欄位，並按下新增</li>
+            <li>
+                此時待處理條目內容將會顯示於網頁上，使用者可以利用右方按鈕進行以下操作：
+                <ul>
+                    <li>
+                        <span class="glyphicon glyphicon-trash"></span>
+                        刪除條目：將條目從文獻集中去除
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-list-alt"></span>
+                        增加相關條目：點擊後，使用者可以加入該條目下的相關條目
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-duplicate"></span>
+                        複製條目連結：可以複製該條目的網址
+                    </li>
+                </ul>
+            </li>
+            <li>
+                按下右上角「
+                <span class="glyphicon glyphicon-refresh"></span>
+                更新文獻集」按鈕，將條目加入文獻集中，此時條目狀態將由
+                <span class="glyphicon glyphicon-hourglass"></span>
+                待處理轉為
+                <span class="glyphicon glyphicon-ok" style="color:green"></span>
+                載入成功或者
+                <span class="glyphicon glyphicon-remove" style="color:red"></span>
+                載入失敗
+                <ul>
+                    <li>若是失敗，條目右方將顯示
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        錯誤訊息按鈕，使用者可點擊查看錯誤訊息
+                    </li>
+                </ul>
+            </li>
+            <li>
+                按下右上角「
+                <span class="glyphicon glyphicon-floppy-save"></span>
+                匯出DocuXML」按鈕，則可順利匯出 DocuXML 檔案
+                <ul>
+                    <li>若是使用者未按下更新文獻集按鈕便匯出，將會彈出警示視窗。表示尚有條目未載入文獻集中。若執意匯出，未載入的條目將遺失。</li>
+                </ul>
+            </li>
+        </ol>
     </div>
     <hr>
     <div id="tool-upload" >
         <div id="upload-box"><input type="file" name="docuxml" accept='.xml'></div>
-        <div id="upload-hint"><label>上傳docuXML檔案或建立新檔</label></div>
+        <div id="upload-hint"><label>上傳 DocuXML 檔案或建立新檔</label></div>
         <input type="button" class="btn btn-primary btn-lg" name="upload-btn" value="上傳">
         <input type="button" class="btn btn-primary btn-lg" name="create-btn" value="建立">
     </div>
