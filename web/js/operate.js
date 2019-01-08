@@ -607,6 +607,7 @@ $("#new-corpus").click(function() {
         return;
     if (window.corpus_list.includes(name)) {
         window.alert("文獻集名稱不可重複！");
+        $(text).val("");
         return;
     }
     window.handler.create_corpus(name);
