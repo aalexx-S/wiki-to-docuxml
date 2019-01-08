@@ -110,11 +110,11 @@ function get_all_links(url, result_callback, result_data, con_str) {
 	 *  			- key: page title, '_' replaced with ' '.
 	 *  			- value: url
  	 *
-	 *	result_data: dictionary (optional)
+	 *	result_data: dictionary (leave it as 'undefined' if not processing 'continue')
 	 *		The format is the same as return data. New data will be added into it.
 	 *		If url does not match, result_data will be discaeded.
 	 *
-	 *  con_str: string (optional)
+	 *  con_str: string (leave it as 'undefined' if not processing 'continue')
 	 *		If is not empty, the string will be add to api call parameter.
 	 *
 	 * Return value: dictionary
@@ -152,11 +152,14 @@ function get_all_links(url, result_callback, result_data, con_str) {
 			var re = event.data.data;
 			// parse the links and put into dictionary
 			var tmp_all = JSON.parse(re);
+			if (! ('query' in tmp_all && 'pages' in tmp_all.query)) { // handle title error
+				tmp_all.query = {'pages': []};
+			}
 			var tmp = tmp_all.query.pages;
 			if (Object.keys(tmp).length == 0) {
-				console.log("Query success but contains no any link.");
+				console.log("No relative link found.");
 				result_data.status = false;
-				result_data.data = "Query success but no any links";
+				result_data.data = "Title incorrect or page not exist.";
 			}
 			for (var page_id in tmp) { // place all the links into return data
 				if (page_id == -1)
@@ -164,6 +167,7 @@ function get_all_links(url, result_callback, result_data, con_str) {
 				var link = tmp[page_id];
 				var furl = link.fullurl;
 				var title = get_title_from_url(furl);
+				title = title.replace(/_/g, ' '); // replace underscore in url to actual space
 				result_data.data[title] = furl;
 			}
 			// check continue
@@ -183,7 +187,6 @@ function get_all_links(url, result_callback, result_data, con_str) {
 	con_str = con_str || '';
 	// Pass url to worker and start work
 	worker.postMessage(url + ",continue:query:string," + con_str);
-
 }
 
 function stop_worker() {
