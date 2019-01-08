@@ -72,6 +72,7 @@
     width: 150px;
     height:250px;
     text-align: left;
+    vertical-align: top;
     display: inline-block;
     margin:0 5px 0 5px;
     overflow: auto;
@@ -80,6 +81,7 @@
     width: 90px;
     height:250px;
     padding: 90px 0 0 0;
+    vertical-align: top;
     display: inline-block;
     overflow: auto;
 }
