@@ -10,23 +10,9 @@ All the testing and developement are based on Chinese wiki pages (zh.wikipedia.o
 
 ## Usage
 
-WIP.
+It doesn't depends on anything, plain javascript+css+html. IE won't work so use chrome or firefox instead.
 
-## Structure
-
-* Structure
-
-![Illustration of structure](docs/structure.png)
-
-## Sequence Diagram
-
-* Open
-
-![Sequence for opening existing docuXML](docs/sequence_01_load.png)
-
-* Update
-
-![Sequence for updaing loaded/new docuXML](docs/sequence_01_update.png)
+For normal users, there are explainations and steps in 'index' so just follow the instructions in it.
 
 ## Contribution
 
