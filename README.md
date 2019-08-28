@@ -6,7 +6,7 @@ Given wiki page URLs, we can generate a [docuXML][1] file using this project.
 
 All the testing and developement are based on Chinese wiki pages (zh.wikipedia.org) for now.
 
-[1]: http://docusky.digital.ntu.edu.tw/DocuSky/documentation/docs/DocuXml-2.0-schemet.html
+[1]: https://docusky.org.tw/DocuSky/documentation/docs/DocuXml-1.2-Scheme.html
 
 ## Usage
 
